@@ -30,7 +30,7 @@ async function getHazardData(query) {
       })
     })
   }
-  
+
   async function getPoliceData(query) {
     return new Promise (function(resolve,reject) {
       request(POLICE_ENDPOINT + query, function (error, response, body) {

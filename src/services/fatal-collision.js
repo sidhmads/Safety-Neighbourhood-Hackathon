@@ -1,8 +1,6 @@
 const fs = require('fs')
 const fatalCollisionDataset = require('./sample-dataset/fatal-collision-dataset.json')
-const hazardousDataset = require('./sample-dataset/hazardous-area.json')
 const alasql = require('alasql')
-const geolib = require('geolib')
 
 //clean data first
 const cleansedDataset = fatalCollisionDataset.data.map(data => {
