@@ -3,28 +3,50 @@ const harzardousAreaData = require('../services/harzardous-area')
 const collisionData = require('../services/fatal-collision')
 const geolib = require('geolib')
 
-const collisions = collisionData.aggregateByLatLon()
+let harzards
+let collisions
+let areas = []
 
-const areas = harzardousAreaData.map(area=>{
+harzardousAreaData.subscribe(data=>{
+  harzards = data
+  if (harzards && collisions) {
+    areas =  combineData(harzards, collisions.aggLatLon)
+  }
+})
 
-  area.collisions = 0
-
-  collisions.forEach( collision => {
-    const isInside = geolib.isPointInside(
-      { latitude: collision.latitude, longitude: collision.longitude},
-      [
-        {latitude: area.latitude_ne, longitude: area.longitude_ne},
-        {latitude: area.latitude_sw, longitude: area.longitude_sw},
-        {latitude: area.latitude, longitude: area.longitude}
-      ])
-      if (isInside){
-          area.collisions += collision.accidentCount
-      }
-  })
-
-  return area
+collisionData.subscribe(x=>{
+  collisions = x
+  if (harzards && collisions) {
+      areas =  combineData(harzards, collisions.aggLatLon)
+  }
 
 })
+
+const combineData = (harzards, collisions) => {
+  return harzards.map(area=>{
+
+    area.collisions = 0
+
+    collisions.forEach( collision => {
+      const isInside = geolib.isPointInside(
+        { latitude: collision.latitude, longitude: collision.longitude},
+        [
+          {latitude: area.latitude_ne, longitude: area.longitude_ne},
+          {latitude: area.latitude_sw, longitude: area.longitude_sw},
+          {latitude: area.latitude, longitude: area.longitude}
+        ])
+        if (isInside){
+            area.collisions += collision.accidentCount
+        }
+    })
+
+    return area
+
+  })
+}
+
+
+
 
 const getDangerLevel = async (latitude, longitude) => {
 
@@ -46,7 +68,6 @@ const getDangerLevel = async (latitude, longitude) => {
       break
     }
   }
-  console.log(area)
   return area
 }
 
