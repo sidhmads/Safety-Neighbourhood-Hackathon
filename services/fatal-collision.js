@@ -1,6 +1,7 @@
 const fs = require('fs')
 const fatalCollisionDataset = require('./sample-dataset/fatal-collision-dataset.json')
 const alasql = require('alasql')
+const { getOverallData } = require('./namara')
 
 //clean data first
 const cleansedDataset = fatalCollisionDataset.data.map(data => {
