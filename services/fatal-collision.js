@@ -9,6 +9,7 @@ const cleansedDataset = fatalCollisionDataset.data.map(data => {
   return {
     hour: data.hour,
     light: data.light,
+    visibility: data.visibility,
     roadCondition: data.rdsfcond,
     victimType: data.invtype,
     victimAge: data.invage,
@@ -19,7 +20,7 @@ const cleansedDataset = fatalCollisionDataset.data.map(data => {
 })
 
 alasql('CREATE TABLE collisions \
-(hour int, light string, roadCondition string, victimType string, vehicleType string, longitude decimal, latitude decimal)');
+(hour int, light string, visibility string, roadCondition string, victimType string, vehicleType string, longitude decimal, latitude decimal)');
 
 alasql('SELECT * INTO collisions FROM ?',[cleansedDataset]);
 
@@ -43,10 +44,18 @@ const aggregateByHour = () => {
    Count(*) as accidentCount From collisions GROUP BY hour) as B")
 }
 
+//show which visibility has the most accidents
+const aggregateByVisibility = () => {
+  return alasql("\
+  SELECT B.visibility, B.accidentCount, B.accidentCount / (SELECT COUNT(*) FROM collisions) as ratio\
+  from (SELECT visibility, \
+   Count(*) as accidentCount From collisions GROUP BY visibility) as B")
+}
 
 module.exports = {
   aggregateByLatLon,
-  aggregateByHour
+  aggregateByHour,
+  aggregateByVisibility
 }
 
 // console.log(aggregateByLatLon())
