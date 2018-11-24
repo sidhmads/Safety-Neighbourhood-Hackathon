@@ -13,6 +13,7 @@ router.get('/', async function(req, res, next) {
 router.get('/dangerLevel/lat/:latitude/lon/:longitude', async (req, res, next) => {
 
     const {latitude, longitude} = req.params
+
     const level = await getScore(latitude, longitude)
     res.json(level)
 })

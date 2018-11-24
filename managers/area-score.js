@@ -42,9 +42,11 @@ const getDangerLevel = async (latitude, longitude) => {
     ])
 
     if (isPointInside){
-      area.level = area.collisions
+      area.level = areas[i].collisions
+      break
     }
   }
+  console.log(area)
   return area
 }
 
